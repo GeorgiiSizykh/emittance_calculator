@@ -1,7 +1,4 @@
 import pandas as pd
-import warnings
-
-warnings.filterwarnings('ignore')
 
 # Чтение данных из Excel файла
 df = pd.read_excel('data_1.xlsx')
