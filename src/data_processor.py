@@ -48,6 +48,9 @@ def read_excel_data(file_path, const=1):
     # Чтение данных из Excel файла без использования первой строки как заголовков
     df = pd.read_excel(file_path, header=None)
     
+    # Перевод расстояний из миллиметров в метры (первая колонка)
+    df.iloc[:, 0] = df.iloc[:, 0] * 0.001
+    
     # Умножение всех колонок, кроме первой, на константу
     columns_to_multiply = df.columns[1:]  # Все колонки кроме первой
     df[columns_to_multiply] = df[columns_to_multiply] * const
@@ -55,12 +58,12 @@ def read_excel_data(file_path, const=1):
     # Подготовка данных для взвешенного стандартного отклонения
     # Для второй колонки
     valid_col2_mask = df.iloc[:, 1].notna() & (df.iloc[:, 1] != 0) & df.iloc[:, 0].notna()
-    distances_col2 = df.loc[valid_col2_mask, 0].values  # Расстояния
+    distances_col2 = df.loc[valid_col2_mask, 0].values  # Расстояния (в метрах)
     weights_col2 = df.loc[valid_col2_mask, 1].values   # Количество измерений
     
     # Для третьей колонки
     valid_col3_mask = df.iloc[:, 2].notna() & (df.iloc[:, 2] != 0) & df.iloc[:, 0].notna()
-    distances_col3 = df.loc[valid_col3_mask, 0].values  # Расстояния
+    distances_col3 = df.loc[valid_col3_mask, 0].values  # Расстояния (в метрах)
     weights_col3 = df.loc[valid_col3_mask, 2].values   # Количество измерений
     
     return df, distances_col2, weights_col2, distances_col3, weights_col3
@@ -111,15 +114,15 @@ def process_data_files(data_files, field_values, data_folder='data', const=1):
             weighted_std_distances_col2.append(weighted_std_col2)
             weighted_std_distances_col3.append(weighted_std_col3)
             
-            print(f"Взвешенное стандартное отклонение расстояний для второй колонки: {weighted_std_col2:.6f}")
-            print(f"Взвешенное стандартное отклонение расстояний для третьей колонки: {weighted_std_col3:.6f}")
+            print(f"Взвешенное стандартное отклонение расстояний для второй колонки: {weighted_std_col2:.6f} м")
+            print(f"Взвешенное стандартное отклонение расстояний для третьей колонки: {weighted_std_col3:.6f} м")
             
             # Дополнительная отладочная информация
             if len(distances_col2) > 0:
                 print(f"Пример для второй колонки:")
-                print(f"  Расстояния: {distances_col2[:5]}...")
+                print(f"  Расстояния (м): {distances_col2[:5]}...")
                 print(f"  Веса (количество измерений): {weights_col2[:5]}...")
-                print(f"  Взвешенное среднее: {np.average(distances_col2, weights=weights_col2):.6f}")
+                print(f"  Взвешенное среднее (м): {np.average(distances_col2, weights=weights_col2):.6f}")
         else:
             print(f"Файл {filename} не найден!")
     
