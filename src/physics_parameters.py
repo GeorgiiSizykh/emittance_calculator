@@ -67,33 +67,19 @@ def calculate_w_parameter(field_values, d, l, Z, epsilon):
 
 def print_physics_parameters(d, l, epsilon, Z, field_values):
     """
-    Выводит физические параметры и вспомогательные величины
-    
-    Args:
-        d (float): Длина дрейфа
-        l (float): Эффективная длина соленоида
-        epsilon (float): Энергия электрона
-        Z (float): Величина заряда
-        field_values (list): Значения поля
+    Компактно выводит физические параметры и значения w
     """
     gamma, beta = calculate_relativistic_parameters(epsilon)
     w_values = calculate_w_parameter(field_values, d, l, Z, epsilon)
-    
-    print("=" * 60)
-    print("ФИЗИЧЕСКИЕ ПАРАМЕТРЫ")
-    print("=" * 60)
-    print(f"Длина дрейфа d = {d:.6e} м")
-    print(f"Эффективная длина соленоида l = {l:.6e} м")
-    print(f"Энергия электрона ε = {epsilon:.6e} Дж")
-    print(f"Величина заряда Z = {Z}")
-    print(f"Релятивистский параметр γ = {gamma:.6f}")
-    print(f"Параметр β = {beta:.6f}")
-    print()
-    
-    print("ЗНАЧЕНИЯ ПОЛЯ И ПАРАМЕТРА w:")
-    print("-" * 40)
+    print("\nФИЗИЧЕСКИЕ ПАРАМЕТРЫ:")
+    print(f"  Длина дрейфа d = {d:.6e} м")
+    print(f"  Эффективная длина соленоида l = {l:.6e} м")
+    print(f"  Энергия электрона ε = {epsilon:.6e} Дж")
+    print(f"  Величина заряда Z = {Z}")
+    print(f"  Релятивистский параметр γ = {gamma:.6f}")
+    print(f"  Параметр β = {beta:.6f}")
+    print("  Значения поля и параметра w:")
     for i, (B, w) in enumerate(zip(field_values, w_values)):
-        print(f"Field[{i}] = {B}: w = {w:.6f}")
-    print("=" * 60)
-    
+        print(f"    Field[{i}] = {B} : w = {w:.6f}")
+    print()
     return w_values 

@@ -69,7 +69,7 @@ def read_excel_data(file_path, const=1):
     return df, distances_col2, weights_col2, distances_col3, weights_col3
 
 
-def process_data_files(data_files, field_values, data_folder='data', const=1):
+def process_data_files(data_files, field_values, data_folder='data', const=1, verbose=False):
     """
     Обрабатывает список файлов и вычисляет взвешенные стандартные отклонения
     
@@ -78,6 +78,7 @@ def process_data_files(data_files, field_values, data_folder='data', const=1):
         field_values (list): Список значений field, соответствующих каждому файлу
         data_folder (str): Папка с данными (по умолчанию 'data')
         const (float): Константа для умножения данных (по умолчанию 1)
+        verbose (bool): Флаг для вывода отладочной информации (по умолчанию False)
         
     Returns:
         tuple: (weighted_std_col2, weighted_std_col3, field_values)
@@ -85,27 +86,30 @@ def process_data_files(data_files, field_values, data_folder='data', const=1):
     weighted_std_distances_col2 = []
     weighted_std_distances_col3 = []
     
-    print("Обработка файлов из папки data:")
-    print("-" * 40)
+    if verbose:
+        print("Обработка файлов из папки data:")
+        print("-" * 40)
     
     for i, filename in enumerate(data_files):
         file_path = os.path.join(data_folder, filename)
         
         if os.path.exists(file_path):
-            print(f"\nОбработка файла: {filename}")
-            print(f"Соответствующее значение field: {field_values[i]}")
+            if verbose:
+                print(f"\nОбработка файла: {filename}")
+                print(f"Соответствующее значение field: {field_values[i]}")
             
             # Чтение и обработка данных
             df, distances_col2, weights_col2, distances_col3, weights_col3 = read_excel_data(file_path, const)
             
             # Вывод информации о данных
-            print(f"Размер данных: {df.shape}")
-            print("Первые 5 строк данных:")
-            print(df.head())
+            if verbose:
+                print(f"Размер данных: {df.shape}")
+                print("Первые 5 строк данных:")
+                print(df.head())
             
-            print(f"\nОтладочная информация:")
-            print(f"Количество строк с данными во второй колонке: {len(distances_col2)}")
-            print(f"Количество строк с данными в третьей колонке: {len(distances_col3)}")
+            if verbose:
+                print(f"Количество строк с данными во второй колонке: {len(distances_col2)}")
+                print(f"Количество строк с данными в третьей колонке: {len(distances_col3)}")
             
             # Вычисляем взвешенные стандартные отклонения расстояний
             weighted_std_col2 = weighted_std(distances_col2, weights_col2)
@@ -114,16 +118,13 @@ def process_data_files(data_files, field_values, data_folder='data', const=1):
             weighted_std_distances_col2.append(weighted_std_col2)
             weighted_std_distances_col3.append(weighted_std_col3)
             
-            print(f"Взвешенное стандартное отклонение расстояний для второй колонки: {weighted_std_col2:.6f} м")
-            print(f"Взвешенное стандартное отклонение расстояний для третьей колонки: {weighted_std_col3:.6f} м")
-            
-            # Дополнительная отладочная информация
-            if len(distances_col2) > 0:
+            if verbose and len(distances_col2) > 0:
                 print(f"Пример для второй колонки:")
                 print(f"  Расстояния (м): {distances_col2[:5]}...")
                 print(f"  Веса (количество измерений): {weights_col2[:5]}...")
                 print(f"  Взвешенное среднее (м): {np.average(distances_col2, weights=weights_col2):.6f}")
         else:
-            print(f"Файл {filename} не найден!")
+            if verbose:
+                print(f"Файл {filename} не найден!")
     
     return weighted_std_distances_col2, weighted_std_distances_col3, field_values 
