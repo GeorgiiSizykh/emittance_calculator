@@ -12,10 +12,10 @@ import yaml
 # Добавляем папку src в путь для импорта модулей
 sys.path.append(str(Path(__file__).parent / 'src'))
 
-from data_processor import process_data_files
-from visualization import plot_weighted_std_dependencies, plot_std_vs_w_with_approximation, print_results_summary
-from physics_parameters import calculate_relativistic_parameters, calculate_w_parameter
-from approximation import fit_parabola_and_calculate_emittance
+from src.data_processor import process_data_files
+from src.visualization import plot_weighted_std_dependencies, plot_std_vs_w_with_approximation, print_results_summary
+from src.physics_parameters import calculate_relativistic_parameters, calculate_w_parameter
+from src.approximation import fit_parabola_and_calculate_emittance
 
 
 def load_config(config_path="config.yaml"):
@@ -100,13 +100,13 @@ def main():
     print(f"\n6. ФИНАЛЬНЫЕ РЕЗУЛЬТАТЫ:")
     print("=" * 50)
     if emittance_x_result:
-        print(f"Эмиттанс по оси X: {emittance_x_result['emittance']:.6e} м·рад")
-        print(f"Нормированный эмиттанс по оси X: {emittance_x_result['norm_emittance']:.6e} м·рад")
+        print(f"Эмиттанс по оси X: {1e6 * emittance_x_result['emittance']:.6e} мм·мрад")
+        print(f"Нормированный эмиттанс по оси X: {1e6 * emittance_x_result['norm_emittance']:.6e} мм·мрад")
         print(f"Параметры аппроксимации (a, b, c): {emittance_x_result['parameters']}")
         print(f"Коэффициент детерминации R²: {emittance_x_result['r_squared']:.6f}")
     if emittance_y_result:
-        print(f"Эмиттанс по оси Y: {emittance_y_result['emittance']:.6e} м·рад")
-        print(f"Нормированный эмиттанс по оси Y: {emittance_y_result['norm_emittance']:.6e} м·рад")
+        print(f"Эмиттанс по оси Y: {1e6 * emittance_y_result['emittance']:.6e} мм·мрад")
+        print(f"Нормированный эмиттанс по оси Y: {1e6 * emittance_y_result['norm_emittance']:.6e} мм·мрад")
         print(f"Параметры аппроксимации (a, b, c): {emittance_y_result['parameters']}")
         print(f"Коэффициент детерминации R²: {emittance_y_result['r_squared']:.6f}")
     print("=" * 50)
