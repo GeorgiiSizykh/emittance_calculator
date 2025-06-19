@@ -1,0 +1,11 @@
+energy: 1.6e-13  # Энергия электрона (Дж)
+drift_length: 0.5  # Длина дрейфа (м)
+solenoid_length: 0.01  # Эффективная длина соленоида (м)
+charge: 1.0  # Величина заряда
+const: 1  # Константа для пересчёта
+
+data_files:
+  - test_data_1.xlsx
+  - test_data_2.xlsx
+  - test_data_3.xlsx
+field_values: [1, 2, 3] 
