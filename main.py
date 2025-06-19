@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 import yaml
+import csv
 
 # Добавляем папку src в путь для импорта модулей
 sys.path.append(str(Path(__file__).parent / 'src'))
@@ -100,17 +101,36 @@ def main():
     print(f"\n6. ФИНАЛЬНЫЕ РЕЗУЛЬТАТЫ:")
     print("=" * 50)
     if emittance_x_result:
-        print(f"Эмиттанс по оси X: {1e6 * emittance_x_result['emittance']:.6e} мм·мрад")
-        print(f"Нормированный эмиттанс по оси X: {1e6 * emittance_x_result['norm_emittance']:.6e} мм·мрад")
+        print(f"Эмиттанс по оси X: {emittance_x_result['emittance']:.6e} м·рад")
+        print(f"Нормированный эмиттанс по оси X: {emittance_x_result['norm_emittance']:.6e} м·рад")
         print(f"Параметры аппроксимации (a, b, c): {emittance_x_result['parameters']}")
         print(f"Коэффициент детерминации R²: {emittance_x_result['r_squared']:.6f}")
     if emittance_y_result:
-        print(f"Эмиттанс по оси Y: {1e6 * emittance_y_result['emittance']:.6e} мм·мрад")
-        print(f"Нормированный эмиттанс по оси Y: {1e6 * emittance_y_result['norm_emittance']:.6e} мм·мрад")
+        print(f"Эмиттанс по оси Y: {emittance_y_result['emittance']:.6e} м·рад")
+        print(f"Нормированный эмиттанс по оси Y: {emittance_y_result['norm_emittance']:.6e} м·рад")
         print(f"Параметры аппроксимации (a, b, c): {emittance_y_result['parameters']}")
         print(f"Коэффициент детерминации R²: {emittance_y_result['r_squared']:.6f}")
     print("=" * 50)
     print("РАСЧЕТ ЗАВЕРШЕН!")
+
+    # Сохраняем эмиттансы в CSV
+    emittance_csv_path = results_dir / "emittance_results.csv"
+    with open(emittance_csv_path, mode="w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["axis", "emittance", "norm_emittance"])
+        if emittance_x_result:
+            writer.writerow([
+                "x",
+                f"{emittance_x_result['emittance']:.6e}",
+                f"{emittance_x_result['norm_emittance']:.6e}"
+            ])
+        if emittance_y_result:
+            writer.writerow([
+                "y",
+                f"{emittance_y_result['emittance']:.6e}",
+                f"{emittance_y_result['norm_emittance']:.6e}"
+            ])
+    print(f"Результаты эмиттанса сохранены в {emittance_csv_path}")
 
 
 if __name__ == "__main__":
