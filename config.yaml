@@ -2,32 +2,31 @@ energy: 1.6e-13  # Энергия электрона (Дж)
 drift_length: 0.868  # Длина дрейфа (м)
 solenoid_length: 0.3  # Эффективная длина соленоида (м)
 charge: 1.0  # Величина заряда
-const: 1  # Константа для пересчёта
 
 
-data_type: experiment # experiment или modelling
+data_type: modelling # experiment или modelling
+verbose: false  # Включение/выключение подробного вывода
 
 # Путь к данным:
-# data_path: data/test_data_23_06_25
-data_path: data/test_data_03_06_25
+data_path: data/test_data_23_06_25
+# data_path: data/test_data_03_06_25
 
 
-field_values: [1, 2, 3]
-data_files:
-  - test_data_1.xlsx
-  - test_data_2.xlsx
-  - test_data_3.xlsx
-
-
-# field_values: [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
-
+# field_values: [1, 2, 3]
 # data_files:
-#   - B = 0, emitt = 8.600.xlsx
-#   - B = 0.01, emitt = 8.694.xlsx
-#   - B = 0.02, emitt = 8.646.xlsx
-#   - B = 0.03, emitt = 8.694.xlsx
-#   - B = 0.04, emitt = 8.775.xlsx
-#   - B = 0.05, emitt = 8.882.xlsx
-#   - B = 0.06, emitt = 9.019.xlsx
-#   - B = 0.07, emitt = 9.206.xlsx
-#   - B = 0.08, emitt = 9.495.xlsx
+#   - test_data_1.xlsx
+#   - test_data_2.xlsx
+#   - test_data_3.xlsx
+
+
+field_values: [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
+data_files:
+  - B = 0, emitt = 8.600.xlsx
+  - B = 0.01, emitt = 8.694.xlsx
+  - B = 0.02, emitt = 8.646.xlsx
+  - B = 0.03, emitt = 8.694.xlsx
+  - B = 0.04, emitt = 8.775.xlsx
+  - B = 0.05, emitt = 8.882.xlsx
+  - B = 0.06, emitt = 9.019.xlsx
+  - B = 0.07, emitt = 9.206.xlsx
+  - B = 0.08, emitt = 9.495.xlsx

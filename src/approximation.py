@@ -67,7 +67,7 @@ def calculate_r_squared(y_actual, y_predicted):
     return r_squared
 
 
-def fit_parabola_and_calculate_emittance(w_values, std_values, d, gamma, beta, axis_name="x"):
+def fit_parabola_and_calculate_emittance(w_values, std_values, d, gamma, beta, axis_name="x", verbose=False):
     """
     Аппроксимирует зависимость стандартного отклонения от w параболой
     и вычисляет параметры эмиттанса
@@ -79,12 +79,13 @@ def fit_parabola_and_calculate_emittance(w_values, std_values, d, gamma, beta, a
         gamma (float): Релятивистский фактор
         beta (float): Относительная скорость
         axis_name (str): Название оси (x или y)
-        
+        verbose (bool): Флаг подробного вывода
     Returns:
         dict: Параметры эмиттанса
     """
-    print(f"\nАППРОКСИМАЦИЯ ДЛЯ ОСИ {axis_name.upper()}")
-    print("-" * 50)
+    if verbose:
+        print(f"\nАППРОКСИМАЦИЯ ДЛЯ ОСИ {axis_name.upper()}")
+        print("-" * 50)
     
     # Преобразуем в numpy arrays для корректной работы
     w_array = np.array(w_values)
@@ -107,8 +108,9 @@ def fit_parabola_and_calculate_emittance(w_values, std_values, d, gamma, beta, a
     # Вычисляем R²
     r_squared = calculate_r_squared(std_array, std_predicted)
     
-    print(f"Параболическая аппроксимация: std = {a:.6f} * w² + {b:.6f} * w + {c:.6f}")
-    print(f"R² = {r_squared:.6f}")
+    if verbose:
+        print(f"Параболическая аппроксимация: std = {a:.6f} * w² + {b:.6f} * w + {c:.6f}")
+        print(f"R² = {r_squared:.6f}")
     
     # Вычисляем параметры эмиттанса
     # sigma2_x0 = a (коэффициент при w²)
@@ -131,10 +133,11 @@ def fit_parabola_and_calculate_emittance(w_values, std_values, d, gamma, beta, a
     else:
         param_names = ["sigma2_y0", "sigma2_yyp0", "sigma2_ypyp0", "emittance_y", "norm_emittance_y"]
     
-    print(f"\nПАРАМЕТРЫ ЭМИТТАНСА ДЛЯ ОСИ {axis_name.upper()}:")
-    print(f"{param_names[0]} = {sigma2_0:.6e}")
-    print(f"{param_names[1]} = {sigma2_1:.6e}")
-    print(f"{param_names[2]} = {sigma2_2:.6e}")
+    if verbose:
+        print(f"\nПАРАМЕТРЫ ЭМИТТАНСА ДЛЯ ОСИ {axis_name.upper()}:")
+        print(f"{param_names[0]} = {sigma2_0:.6e}")
+        print(f"{param_names[1]} = {sigma2_1:.6e}")
+        print(f"{param_names[2]} = {sigma2_2:.6e}")
     print(f"{param_names[3]} = {emittance:.6e} м·рад")
     print(f"{param_names[4]} = {norm_emittance:.6e} м·рад")
     

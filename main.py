@@ -49,6 +49,7 @@ def main():
         sys.exit(1)
     data_type = config["data_type"].strip()
     data_path = config["data_path"].strip()
+    verbose = config.get("verbose", False)
     if data_type not in ["modelling", "experiment"]:
         print(f"Ошибка: неизвестный тип данных '{data_type}' в config.yaml! Должно быть 'modelling' или 'experiment'.")
         sys.exit(1)
@@ -70,7 +71,7 @@ def main():
                 data_files=data_files,
                 field_values=field_values,
                 data_folder=data_path,
-                verbose=True,
+                verbose=verbose,
                 data_type=data_type
             )
         else:
@@ -78,7 +79,7 @@ def main():
                 data_files=data_files,
                 field_values=field_values,
                 data_folder=data_path,
-                verbose=True
+                verbose=verbose
             )
     except Exception as e:
         print(f"ОШИБКА ПРИ ОБРАБОТКЕ ДАННЫХ: {e}")
@@ -88,6 +89,25 @@ def main():
         print("Ошибка: Не удалось обработать данные!")
         return
     
+    # Вывод количества строк с данными для каждого файла (только при verbose=False)
+    if not verbose:
+        print("Количество строк с данными для каждого файла:")
+        for i, filename in enumerate(data_files):
+            file_path = os.path.join(data_path, filename)
+            if os.path.exists(file_path):
+                import pandas as pd
+                df = pd.read_excel(file_path, header=None)
+                if data_type == "modelling":
+                    valid_col1_mask = df.iloc[:, 0].notna()
+                    valid_col2_mask = df.iloc[:, 1].notna()
+                    print(f"  {filename}: кол-во строк в 1-й колонке: {valid_col1_mask.sum()}, во 2-й колонке: {valid_col2_mask.sum()}")
+                else:
+                    valid_col2_mask = df.iloc[:, 1].notna() & (df.iloc[:, 1] != 0) & df.iloc[:, 0].notna()
+                    valid_col3_mask = df.iloc[:, 2].notna() & (df.iloc[:, 2] != 0) & df.iloc[:, 0].notna()
+                    print(f"  {filename}: кол-во строк во 2-й колонке: {valid_col2_mask.sum()}, в 3-й колонке: {valid_col3_mask.sum()}")
+            else:
+                print(f"  {filename}: файл не найден!")
+
     print_results_summary(field_values, weighted_std_col2, weighted_std_col3)
     
     print("\n2. ПОСТРОЕНИЕ ГРАФИКОВ ЗАВИСИМОСТИ ОТ FIELD...")
@@ -117,8 +137,8 @@ def main():
     print(f"Значения параметра w: {[f'{w:.6f}' for w in w_values]}")
     
     print(f"\n4. АППРОКСИМАЦИЯ И РАСЧЕТ ЭМИТТАНСА...")
-    emittance_x_result = fit_parabola_and_calculate_emittance(w_values, weighted_std_col2, d, gamma, beta, axis_name="x")
-    emittance_y_result = fit_parabola_and_calculate_emittance(w_values, weighted_std_col3, d, gamma, beta, axis_name="y")
+    emittance_x_result = fit_parabola_and_calculate_emittance(w_values, weighted_std_col2, d, gamma, beta, axis_name="x", verbose=verbose)
+    emittance_y_result = fit_parabola_and_calculate_emittance(w_values, weighted_std_col3, d, gamma, beta, axis_name="y", verbose=verbose)
     
     print(f"\n5. ПОСТРОЕНИЕ ГРАФИКОВ ЗАВИСИМОСТИ ОТ W С АППРОКСИМАЦИЕЙ...")
     plot_std_vs_w_with_approximation(
@@ -135,13 +155,15 @@ def main():
     if emittance_x_result:
         print(f"Эмиттанс по оси X: {emittance_x_result['emittance']:.6e} м·рад")
         print(f"Нормированный эмиттанс по оси X: {emittance_x_result['norm_emittance']:.6e} м·рад")
-        print(f"Параметры аппроксимации (a, b, c): {emittance_x_result['parameters']}")
-        print(f"Коэффициент детерминации R²: {emittance_x_result['r_squared']:.6f}")
+        if verbose:
+            print(f"Параметры аппроксимации (a, b, c): {emittance_x_result['parameters']}")
+            print(f"Коэффициент детерминации R²: {emittance_x_result['r_squared']:.6f}")
     if emittance_y_result:
         print(f"Эмиттанс по оси Y: {emittance_y_result['emittance']:.6e} м·рад")
         print(f"Нормированный эмиттанс по оси Y: {emittance_y_result['norm_emittance']:.6e} м·рад")
-        print(f"Параметры аппроксимации (a, b, c): {emittance_y_result['parameters']}")
-        print(f"Коэффициент детерминации R²: {emittance_y_result['r_squared']:.6f}")
+        if verbose:
+            print(f"Параметры аппроксимации (a, b, c): {emittance_y_result['parameters']}")
+            print(f"Коэффициент детерминации R²: {emittance_y_result['r_squared']:.6f}")
     print("=" * 50)
     print("РАСЧЕТ ЗАВЕРШЕН!")
 
