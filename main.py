@@ -9,11 +9,12 @@ import sys
 from pathlib import Path
 import yaml
 import csv
+import re
 
 # Добавляем папку src в путь для импорта модулей
 sys.path.append(str(Path(__file__).parent / 'src'))
 
-from src.data_processor import process_data_files
+from src.data_processor import process_data_files, process_data_files_modelling
 from src.visualization import plot_weighted_std_dependencies, plot_std_vs_w_with_approximation, print_results_summary
 from src.physics_parameters import calculate_relativistic_parameters, calculate_w_parameter
 from src.approximation import fit_parabola_and_calculate_emittance
@@ -38,19 +39,50 @@ def main():
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
     
-    # Параметры для обработки данных
-    data_files = config["data_files"]
-    field_values = config["field_values"]
-    const = config["const"]
-    
-    # Обработка данных
-    print("\n1. ОБРАБОТКА ДАННЫХ...")
-    weighted_std_col2, weighted_std_col3, field_values = process_data_files(
-        data_files=data_files,
-        field_values=field_values,
-        data_folder='data',
-        const=const
-    )
+    # Проверка наличия и валидности data_type
+    if "data_type" not in config or not isinstance(config["data_type"], str) or not config["data_type"].strip():
+        print("Ошибка: В config.yaml параметр data_type не задан или задан некорректно!")
+        sys.exit(1)
+    # Проверка наличия и валидности data_path
+    if "data_path" not in config or not isinstance(config["data_path"], str) or not config["data_path"].strip():
+        print("Ошибка: В config.yaml параметр data_path не задан или задан некорректно!")
+        sys.exit(1)
+    data_type = config["data_type"].strip()
+    data_path = config["data_path"].strip()
+    if data_type not in ["modelling", "experiment"]:
+        print(f"Ошибка: неизвестный тип данных '{data_type}' в config.yaml! Должно быть 'modelling' или 'experiment'.")
+        sys.exit(1)
+
+    data_files = []
+    field_values = []
+    # Теперь: если нет data_files или field_values в конфиге — выводим предупреждение и завершаем работу
+    if "data_files" in config and "field_values" in config:
+        data_files = config["data_files"]
+        field_values = config["field_values"]
+    else:
+        print("Ошибка: В config.yaml должны быть заданы и data_files, и field_values! Автоматический парсинг отключён.")
+        return
+
+    print(f"\n1. ОБРАБОТКА ДАННЫХ... (тип: {data_type})")
+    try:
+        if data_type == "modelling":
+            weighted_std_col2, weighted_std_col3, field_values = process_data_files_modelling(
+                data_files=data_files,
+                field_values=field_values,
+                data_folder=data_path,
+                verbose=True,
+                data_type=data_type
+            )
+        else:
+            weighted_std_col2, weighted_std_col3, field_values = process_data_files(
+                data_files=data_files,
+                field_values=field_values,
+                data_folder=data_path,
+                verbose=True
+            )
+    except Exception as e:
+        print(f"ОШИБКА ПРИ ОБРАБОТКЕ ДАННЫХ: {e}")
+        return
     
     if not field_values:
         print("Ошибка: Не удалось обработать данные!")
